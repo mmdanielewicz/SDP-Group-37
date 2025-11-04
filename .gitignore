@@ -1,0 +1,9 @@
+# Ignore raw data but allow zip versions 
+data/raw/
+!data/raw/*.zip
+
+*.shp
+*.dbf
+*.shx
+*.prj
+*.xml
