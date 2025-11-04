@@ -1,7 +1,21 @@
 This folder contains processed data files derived from the raw FEMA National Shelter System Facilities shapefile.
 
 Notes:
-- Includes shelters from **all U.S states and territories**, not only Connecticut.
+- **fema_shelters_clean.csv**: cleaned, includes CT shelters only
 - Columns include facility name, address, city, state, capacity, and other attributes.
 
-**Purpose**: To make the raw FEMA data easier to view and understand using a simple CSV format.
+**Purpose**: To make the raw FEMA data easier to view and understand using a simple CSV format. This CSV serves as the **primary data source for MVP development**.
+
+## Querying the CSV
+
+```python
+import pandas as pd
+
+# Load the CT FEMA shelters data
+df = pd.read_csv("data/processed/fema_shelters_cleaned.csv")
+
+# Example query: list the first 5 shelters in Hartford that are wheelchair accessible
+result = df[(df["city"] == "HARTFORD") & (df["wheelchair"] == "YES")][
+    ["facility_name", "city", "state", "capacity", "wheelchair"]
+]
+print(result.head())
