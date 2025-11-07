@@ -23,11 +23,11 @@ class DataAgent:
         if os.path.exists(csv_path):
             csv_df = pd.read_csv(csv_path)
 
-            # normalize names to avoid mismatch
+            # Normalize names to avoid mismatch
             csv_df["shelter_na"] = csv_df["shelter_na"].astype(str).str.strip().str.lower()
             self.df["shelter_na"] = self.df["shelter_na"].astype(str).str.strip().str.lower()
 
-            # merge and fix geometry
+            # Merge and fix geometry
             self.df = self.df.merge(csv_df, on="shelter_na", how="left", suffixes=("", "_csv"))
             if "geometry_x" in self.df.columns:
                 self.df = self.df.rename(columns={"geometry_x": "geometry"})
@@ -35,8 +35,19 @@ class DataAgent:
                 self.df = self.df.drop(columns=["geometry_y"])
             self.df = gpd.GeoDataFrame(self.df, geometry="geometry", crs="EPSG:4326")
 
+            # Wheelchair accessibility logic setup
+            if "wheelchair" in self.df.columns:
+                self.df["handicap_accessible"] = self.df["wheelchair"].apply(
+                    lambda x: "Yes"
+                    if str(x).strip().lower() in ["yes", "y", "true", "1", "available", "accessible"]
+                    else "No"
+                )
+            else:
+                self.df["handicap_accessible"] = "No"
+
         else:
             print("Warning: CSV not found — using shapefile only.")
+            self.df["handicap_accessible"] = None
 
     # -------------------------------------------------------------
     def get_nearest_shelters(self, lat, lon, limit=3, state_filter=None):
@@ -46,7 +57,9 @@ class DataAgent:
 
         df_filtered = self.df
         if state_filter:
-            df_filtered = df_filtered[df_filtered["state"].str.lower() == state_filter.lower()]
+            df_filtered = df_filtered[
+                df_filtered["state"].str.lower() == state_filter.lower()
+            ]
 
         # Reproject to planar coordinates for accurate distances
         df_proj = df_filtered.to_crs(epsg=3857)
@@ -72,7 +85,9 @@ class DataAgent:
                 "status": row.get("shelter_st", "Unknown"),
                 "lat": row.geometry.y,
                 "lon": row.geometry.x,
-                "distance_miles": round(row.distance_miles, 2)
+                "distance_miles": round(row.distance_miles, 2),
+                "handicap_accessible": row.get("handicap_accessible", "No"),
+                "hazard_polygons": row.get("hazard_polygons", None)
             })
 
         return results
