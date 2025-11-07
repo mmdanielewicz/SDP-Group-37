@@ -1,0 +1,96 @@
+import osmnx as ox
+import networkx as nx
+import folium
+from pyproj import Transformer
+
+# example json from data agent for building and testing
+example_json = {
+    "input_location": {
+        "lat": 41.807,
+        "lon": -72.253
+    },
+    "nearest_shelters": [
+        {
+            "name": "Univercity Of Connecticut Guyer Gym",
+            "address": "2111 Hillside Rd",
+            "city": "STORRS MANSFIELD",
+            "state": "CT",
+            "zip": "06269",
+            "status": "CLOSED",
+            "lat": 5132161.261238727,
+            "lon": -8043465.968835316,
+            "distance_miles": 0.19
+        },
+        {
+            "name": "University Of Connecticuit Gampel Pavilion",
+            "address": "2095 HILLSIDE RD",
+            "city": "STORRS MANSFIELD",
+            "state": "CT",
+            "zip": "06269",
+            "status": "CLOSED",
+            "lat": 5132225.729440598,
+            "lon": -8043518.027061226,
+            "distance_miles": 0.23
+        },
+        {
+            "name": "Mansfield Community Center",
+            "address": "4 South Eagleville Rd.",
+            "city": "MANSFIELD",
+            "state": "CT",
+            "zip": "06268",
+            "status": "CLOSED",
+            "lat": 5131221.947840509,
+            "lon": -8041858.755949676,
+            "distance_miles": 0.98
+        }
+    ]
+}
+
+towns = list(set(shelter["city"] for shelter in example_json["nearest_shelters"]))
+state = 'CT'
+
+
+transformer = Transformer.from_crs("EPSG:3857", "EPSG:4326", always_xy=True)
+
+shelters = {}
+for s in example_json["nearest_shelters"]:
+    lon, lat = transformer.transform(s["lon"], s["lat"])
+    shelters[s["name"]] = [lat, lon]
+
+
+# print(closest)
+# print(towns)
+
+for t in towns:
+    place = f"{t}, {state}"
+    G = ox.graph_from_place(place, network_type='drive')
+    print(f"Loaded road network with {len(G.nodes)} nodes, {len(G.edges)} edges.")
+
+
+    user_lat, user_lon = example_json["input_location"]["lat"], example_json["input_location"]["lon"]
+    user_node = ox.distance.nearest_nodes(G, X=user_lon, Y=user_lat)
+
+    # print(shelters)
+
+    routes = {}
+    for name, (lat, lon) in shelters.items():
+        try:
+            shelter_node = ox.distance.nearest_nodes(G, X=lon, Y=lat)
+            path = nx.shortest_path(G, user_node, shelter_node, weight="length")
+            length = nx.shortest_path_length(G, user_node, shelter_node, weight="length")
+            routes[name] = {"path": path, "length": length}
+        except nx.NetworkXNoPath:
+            continue
+
+    paths = [info["path"] for _, info in routes.items()]
+    ox.plot_graph_routes(G, paths, route_linewidths=3, route_colors=ox.plot.get_colors(n=len(paths)), node_size=0)
+
+    # print(paths)
+
+# static plot of routes
+
+# print(paths)
+
+    
+
+
