@@ -83,7 +83,7 @@ for t in towns:
             continue
 
     paths = [info["path"] for _, info in routes.items()]
-    ox.plot_graph_routes(G, paths, route_linewidths=3, route_colors=ox.plot.get_colors(n=len(paths)), node_size=0)
+    # ox.plot_graph_routes(G, paths, route_linewidths=3, route_colors=ox.plot.get_colors(n=len(paths)), node_size=0)
 
     # print(paths)
 
@@ -93,4 +93,39 @@ for t in towns:
 
     
 
+# create map centered on user location
+m = folium.Map(location=[user_lat, user_lon], zoom_start=14)
 
+# add marker for user location
+folium.Marker(
+    [user_lat, user_lon],
+    popup="User Location",
+    icon=folium.Icon(color="blue", icon="user")
+).add_to(m)
+
+# add markers for shelters
+for name, (lat, lon) in shelters.items():
+    folium.Marker(
+        [lat, lon],
+        popup=name,
+        icon=folium.Icon(color="red", icon="home")
+    ).add_to(m)
+
+# plot the route lines
+for name, route in routes.items():
+    nodes = route["path"]
+    lines = []
+    for i in range(len(nodes) - 1):
+        pt1 = (G.nodes[nodes[i]]['y'], G.nodes[nodes[i]]['x'])
+        pt2 = (G.nodes[nodes[i+1]]['y'], G.nodes[nodes[i+1]]['x'])
+        lines.append([pt1, pt2])
+
+    folium.PolyLine(
+        [p for seg in lines for p in seg],
+        color="green",
+        weight=3,
+        popup=f"Route to {name}"
+    ).add_to(m)
+
+m.save("routes_map.html")
+print("Saved map to routes_map.html")
