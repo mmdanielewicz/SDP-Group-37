@@ -10,7 +10,7 @@ Notes:
 
 ## Steps To Setup Database Locally
 
-** Start with saving "fema_shelters_clean.csv" from this repo, save it in a simple path to avoid any errors with PostgreSQL
+**Start with saving "fema_shelters_clean.csv" from this repo, save it in a simple path to avoid any errors with PostgreSQL**
 
 1: Install PostgreSQL: https://www.postgresql.org/download/
 - Keep the default port (5432)
@@ -23,7 +23,7 @@ Notes:
 
 4: Right click on your database, select "Query Tool", paste the following query and then click the play button at the top
 
-'''sql
+```sql
 CREATE TABLE ct_shelters (
     shelter_id TEXT,
     shelter_na TEXT,
@@ -99,6 +99,7 @@ CREATE TABLE ct_shelters (
     data_sourc TEXT,
     geometry TEXT
 );
+```
 
 5: On the left under "ct_disaster_resilience" expand "Schemas", then expand "Tables", right click on "ct_shelters"
 - If you don't see "ct_shelters", close the application and reopen
@@ -108,7 +109,7 @@ CREATE TABLE ct_shelters (
 
 6: Right click on "ct_shelters", click "Query Tool" and test using this query:
 
-select * from ct_shelters
+```sql select * from ct_shelters ```
 
 You should now be able to query from the shelter information.
 
