@@ -77,17 +77,17 @@ def test_queries():
             "acceptable":[[True,True]],
             "trials":10
         },
-        #Random unrelated question
-        {"query":"I really really like pigs. Do you like pigs?",
-            "desired":[[False,False]],
-            "acceptable":[],
-            "trials":5
-        },
         #Asking for routing data
         {"query":"How do I get to the Storrs disaster shelter?",
             "desired":[[True, True]],
             "acceptable":[],
             "trials":10
+        },
+        #Random unrelated question
+        {"query":"I really really like pigs. Do you like pigs?",
+            "desired":[[False,False]],
+            "acceptable":[],
+            "trials":5
         },
     ]
         
