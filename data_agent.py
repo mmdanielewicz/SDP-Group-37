@@ -113,7 +113,7 @@ class DataAgent:
         if state_filter and "state" in df_filtered.columns:
             df_filtered = df_filtered[df_filtered["state"].str.lower() == state_filter.lower()]
 
-        #Geodesic distance calculation
+        # Geodesic distance calculation
         def dist_miles(point):
             _, _, meters = self.geod.inv(lon, lat, float(point.x), float(point.y))
             return self._mi(meters)
@@ -121,6 +121,18 @@ class DataAgent:
         df_filtered = df_filtered.copy()
         df_filtered["distance_miles"] = df_filtered.geometry.apply(dist_miles)
         nearest = df_filtered.nsmallest(limit, "distance_miles")
+
+        # Deduplicate while ensuring we still get 3 total shelters
+        deduped = pd.DataFrame()
+        seen = set()
+        for _, row in df_filtered.nsmallest(limit * 2, "distance_miles").iterrows():  # take a slightly larger pool
+            key = (row["shelter_na"].lower(), row["address_1"].lower())
+            if key not in seen:
+                seen.add(key)
+                deduped = pd.concat([deduped, pd.DataFrame([row])])
+            if len(deduped) == limit:
+                break
+        nearest = deduped
 
         results = {
             "input_location": {"lat": lat, "lon": lon},
