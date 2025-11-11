@@ -8,7 +8,8 @@ def get_response(prompt, model="llama3.1:8b"):
     response: ChatResponse = chat(
         model=model, 
         messages=[{'role': 'system', 'content': prompt}],
-        format="json"
+        format="json",
+        options={"temperature":0.1}
     )
     return response.message.content
 
@@ -16,10 +17,6 @@ def interpret_query(query):
     json_template={
         "Question":query,
         "Response":{
-            "related_question":{
-                "Description":"Question is related to natural disasters, shelters, or emergencies.",
-                "Value":"NULL"
-            },
             "need_shelter_data":{
                 "Description":"To answer this question, we need data about disaster shelter locations or services.",
                 "Value":"NULL"
@@ -37,7 +34,7 @@ def interpret_query(query):
     <role>
     This is part of an app created to help users get information about natural disasters and disaster shelters.
     Your job is to fill in a JSON template meticulously, matching the format EXACTLY, based on a question's required information.
-    The data we need is "need_shelter_data" and "need_routing_data".
+    The data we need is "appropriate", "need_shelter_data", and "need_routing_data".
     To complete these, replace any instances of "NULL" with "True" or "False".
     Do not change any other values besides "NULL" in the response.
     </role>
@@ -58,11 +55,9 @@ def interpret_query(query):
     try:
         need_shelter_data=response["need_shelter_data"]
         need_routing_data=response["need_routing_data"]
-        #related_question=response["related_question"]
     except:
-        return False, False, response, "Missing data key(s)."
+        return [False, False], response, "Missing data key(s)."
     try:
-        #related_question=related_question["value"]
         need_shelter_data=need_shelter_data["value"]
         need_routing_data=need_routing_data["value"]
         if type(need_shelter_data) is str:
@@ -74,15 +69,19 @@ def interpret_query(query):
         
     return [need_shelter_data, need_routing_data], response, error
 
-def test_queries(trials):
+def test_queries():
     tests=[
-        #{"query":"I'm hungry, what should I get to eat?",
-        #    "desired":[[False,False]],
-        #    "acceptable":[]
-        #},
+        #Random unrelated question
+        {"query":"I really really like pigs. Do you like pigs?",
+            "desired":[[False,False]],
+            "acceptable":[],
+            "trials":10
+        },
+        #Asking for only shelter data
         {"query":"Where are the nearest disaster shelters?",
             "desired":[[True,False]],
-            "acceptable":[[True,True]]
+            "acceptable":[[True,True]],
+            "trials":30
         },
     ]
         
@@ -90,6 +89,7 @@ def test_queries(trials):
         query=test["query"]
         desired_outputs=test["desired"]
         acceptable_outputs=test["acceptable"]
+        trials=test["trials"]
         
         desired=0
         acceptable=0
@@ -107,13 +107,11 @@ def test_queries(trials):
                 continue
             elif output in acceptable_outputs:
                 print(f"Trial {i+1} - acceptable response.")
-                print("Need shelter data:",need_shelter_data)
-                print("Need routing data:",need_routing_data)
+                print("Output:",output)
                 acceptable+=1
             else:
                 print(f"Trial {i+1} - undesired response.")
-                print("Need shelter data:",need_shelter_data)
-                print("Need routing data:",need_routing_data)
+                print("Output:",output)
             if error!="":
                 print("Error:",error)
                 print("Response:",response)
@@ -123,5 +121,4 @@ def test_queries(trials):
         print("True accuracy:",str(desired/trials*100)+"%\n")
 
 if __name__=="__main__":
-    #Run 20 trials of each query
-    test_queries(30)
+    test_queries()
