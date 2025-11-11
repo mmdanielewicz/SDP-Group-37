@@ -23,6 +23,7 @@ Notes:
 
 4: Right click on your database, select "Query Tool", paste the following query and then click the play button at the top
 
+'''sql
 CREATE TABLE ct_shelters (
     shelter_id TEXT,
     shelter_na TEXT,
