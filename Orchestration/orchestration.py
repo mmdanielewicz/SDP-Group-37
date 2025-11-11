@@ -9,7 +9,7 @@ def get_response(prompt, model="llama3.1:8b"):
         model=model, 
         messages=[{'role': 'system', 'content': prompt}],
         format="json",
-        options={"temperature":0.1}
+        options={"temperature":0.075}
     )
     return response.message.content
 
@@ -34,7 +34,7 @@ def interpret_query(query):
     <role>
     This is part of an app created to help users get information about natural disasters and disaster shelters.
     Your job is to fill in a JSON template meticulously, matching the format EXACTLY, based on a question's required information.
-    The data we need is "appropriate", "need_shelter_data", and "need_routing_data".
+    The data we need is "need_shelter_data" and "need_routing_data".
     To complete these, replace any instances of "NULL" with "True" or "False".
     Do not change any other values besides "NULL" in the response.
     </role>
@@ -71,17 +71,23 @@ def interpret_query(query):
 
 def test_queries():
     tests=[
-        #Random unrelated question
-        {"query":"I really really like pigs. Do you like pigs?",
-            "desired":[[False,False]],
-            "acceptable":[],
-            "trials":10
-        },
         #Asking for only shelter data
         {"query":"Where are the nearest disaster shelters?",
             "desired":[[True,False]],
             "acceptable":[[True,True]],
-            "trials":30
+            "trials":10
+        },
+        #Random unrelated question
+        {"query":"I really really like pigs. Do you like pigs?",
+            "desired":[[False,False]],
+            "acceptable":[],
+            "trials":5
+        },
+        #Asking for routing data
+        {"query":"How do I get to the Storrs disaster shelter?",
+            "desired":[[True, True]],
+            "acceptable":[],
+            "trials":10
         },
     ]
         
