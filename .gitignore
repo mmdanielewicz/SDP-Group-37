@@ -1,3 +1,7 @@
+# Ignore all hazard data folders and large files
+data/hazards/
+
+
 # Ignore large geospatial and data files
 *.shp
 *.shx
