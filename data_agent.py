@@ -6,28 +6,6 @@ import geopandas as gpd
 from pyproj import Geod
 from shapely.geometry import Point
 
-
-def classify_flood_risk(zone: str, subtype: str = "", sfha_tf=None) -> str:
-    """
-    Map FEMA fields to a simple risk label.
-    - SFHA (A/V zones) => High
-    - Zone X shaded (0.2% annual chance) => Moderate
-    - Zone X unshaded => Low
-    """
-    z = (zone or "").upper().strip()
-    st = (subtype or "").upper()
-    sfha_flag = str(sfha_tf).upper() in {"T", "Y", "1", "TRUE", "YES"}
-
-    if sfha_flag or z.startswith(("A", "V")):
-        return "High"
-    if z == "X" and ("0.2" in st or "0.2 PCT" in st or "SHADED" in st):
-        return "Moderate"
-    if z == "X":
-        return "Low"
-    return "Unknown"
-
-
-
 class DataAgent:
 
     geod = Geod(ellps="WGS84")  #initialize once for true Earth distances
@@ -75,10 +53,10 @@ class DataAgent:
 
             # Merge and fix geometry
             self.df = self.df.merge(csv_df, on="shelter_na", how="left", suffixes=("", "_csv"))
-            if "geometry_x" in self.df.columns:
-                self.df = self.df.rename(columns={"geometry_x": "geometry"})
-            if "geometry_y" in self.df.columns:
-                self.df = self.df.drop(columns=["geometry_y"])
+            self.df = (
+                self.df.rename(columns={"geometry_x": "geometry"}, errors="ignore")
+                        .drop(columns=["geometry_y"], errors="ignore")
+            )
             self.df = gpd.GeoDataFrame(self.df, geometry="geometry", crs="EPSG:4326")
 
             # Wheelchair accessibility logic setup
@@ -105,6 +83,27 @@ class DataAgent:
         text = text.replace("Connecticuit", "Connecticut")
         return text
     
+    #-----------------------------------------------------
+    @staticmethod
+    def classify_flood_risk(zone: str, subtype: str = "", sfha_tf=None) -> str:
+        """
+        Map FEMA fields to a simple risk label.
+        - SFHA (A/V zones) => High
+        - Zone X shaded (0.2% annual chance) => Moderate
+        - Zone X unshaded => Low
+        """
+        z = (zone or "").upper().strip()
+        st = (subtype or "").upper()
+        sfha_flag = str(sfha_tf).upper() in {"T", "Y", "1", "TRUE", "YES"}
+
+        if sfha_flag or z.startswith(("A", "V")):
+            return "High"
+        if z == "X" and ("0.2" in st or "0.2 PCT" in st or "SHADED" in st):
+            return "Moderate"
+        if z == "X":
+            return "Low"
+        return "Unknown"
+
     # -------------------------------------------------------------
     def get_nearest_shelters(self, lat, lon, limit=3, state_filter=None):
         """Find nearest shelters using true geodesic distance (WGS84)."""
@@ -153,7 +152,7 @@ class DataAgent:
                         subtype = rec.get("ZONE_SUBTY", "")
                         sfha_tf = rec.get("SFHA_TF", None)
 
-                        risk = classify_flood_risk(zone, subtype, sfha_tf)
+                        risk = self.classify_flood_risk(zone, subtype, sfha_tf)
 
                         hazards_here.append({
                             "type": hname,           # e.g., "fema_flood"
@@ -192,4 +191,4 @@ if __name__ == "__main__":
     agent = DataAgent(base_path="data")
 
     # Example usage: use direct coordinates
-    agent.handle_query(lat=41.291, lon=-72.375, state="CT")
+    agent.handle_query(lat=41.215, lon=-73.063, state="CT")
