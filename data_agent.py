@@ -181,7 +181,7 @@ class DataAgent:
     # -------------------------------------------------------------
     def handle_query(self, lat, lon, state=None):
         """Handle a query by coordinates."""
-        data = self.get_nearest_shelters(lat, lon, limit=3, state_filter=state)
+        data = self.get_nearest_shelters(lat, lon, limit=5, state_filter=state)
         print(json.dumps(data, indent=2))
         return data
 
