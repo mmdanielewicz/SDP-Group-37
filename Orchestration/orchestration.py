@@ -100,7 +100,18 @@ def test_queries():
         desired=0
         acceptable=0
         
-        print(f"Query: {query}\n")
+        print(f"Query: {query}")
+        print(f"{trials} trials")
+        print("Desired output:")
+        if desired_outputs[0][0]:
+            print("Need data agent")
+        else:
+            print("Don't need data agent")
+        if desired_outputs[0][1]:
+            print("Need routing agent")
+        else:
+            print("Don't need routing agent")
+        print("")
         
         for i in range(trials):
             print(f"Running trial {i+1} ...", end="\r", flush=True)
