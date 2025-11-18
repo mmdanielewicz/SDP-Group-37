@@ -1,7 +1,21 @@
 import osmnx as ox
 import networkx as nx
+import geopandas as gpd
 import folium
 from pyproj import Transformer
+
+
+# plot the graphml file
+G = nx.read_graphml("connecticut_drive.graphml")
+
+for node in G.nodes():
+    G.nodes[node]['x'] = float(G.nodes[node]['x'])
+    G.nodes[node]['y'] = float(G.nodes[node]['y'])
+
+for u, v, key, data in G.edges(keys=True, data=True):
+    if 'length' in data:
+        G[u][v][key]['length'] = float(data['length'])
+
 
 # example json from data agent for building and testing
 example_json = {
@@ -46,8 +60,8 @@ example_json = {
     ]
 }
 
-towns = list(set(shelter["city"] for shelter in example_json["nearest_shelters"]))
-state = 'CT'
+# towns = list(set(shelter["city"] for shelter in example_json["nearest_shelters"]))
+# state = 'CT'
 
 
 transformer = Transformer.from_crs("EPSG:3857", "EPSG:4326", always_xy=True)
@@ -61,71 +75,71 @@ for s in example_json["nearest_shelters"]:
 # print(closest)
 # print(towns)
 
-for t in towns:
-    place = f"{t}, {state}"
-    G = ox.graph_from_place(place, network_type='drive')
-    print(f"Loaded road network with {len(G.nodes)} nodes, {len(G.edges)} edges.")
+# for t in towns:
+    # place = f"{t}, {state}"
+    # G = ox.graph_from_place(place, network_type='drive')
+    # print(f"Loaded road network with {len(G.nodes)} nodes, {len(G.edges)} edges.")
 
 
-    user_lat, user_lon = example_json["input_location"]["lat"], example_json["input_location"]["lon"]
-    user_node = ox.distance.nearest_nodes(G, X=user_lon, Y=user_lat)
+user_lat, user_lon = example_json["input_location"]["lat"], example_json["input_location"]["lon"]
+user_node = str(ox.distance.nearest_nodes(G, X=user_lon, Y=user_lat))
 
-    # print(shelters)
+# print(shelters)
 
-    routes = {}
-    for name, (lat, lon) in shelters.items():
-        try:
-            shelter_node = ox.distance.nearest_nodes(G, X=lon, Y=lat)
-            path = nx.shortest_path(G, user_node, shelter_node, weight="length")
-            length = nx.shortest_path_length(G, user_node, shelter_node, weight="length")
-            routes[name] = {"path": path, "length": length}
-        except nx.NetworkXNoPath:
-            continue
+routes = {}
+for name, (lat, lon) in shelters.items():
+    try:
+        shelter_node = str(ox.distance.nearest_nodes(G, X=lon, Y=lat))
+        path = nx.shortest_path(G, user_node, shelter_node, weight="length")
+        length = nx.shortest_path_length(G, user_node, shelter_node, weight="length")
+        routes[name] = {"path": path, "length": length}
+    except nx.NetworkXNoPath:
+        continue
 
-    # paths = [info["path"] for _, info in routes.items()]
+# paths = [info["path"] for _, info in routes.items()]
 
-    for shelter, route_info in routes.items():
-        path = route_info["path"]
-        edge_names = []
+for shelter, route_info in routes.items():
+    path = route_info["path"]
+    edge_names = []
+    
+    print(f"\nRoute to {shelter}:")
+    
+    for i in range(len(path) - 1):
+        u = path[i]  
+        v = path[i + 1] 
         
-        print(f"\nRoute to {shelter}:")
+
+        # may show multiple edges bc of MultiDiGraph
+        edge_data = G.get_edge_data(u, v)
         
-        for i in range(len(path) - 1):
-            u = path[i]  
-            v = path[i + 1] 
+        if edge_data:
+            # if multiple edges exist, get the first one
+            edge_info = edge_data.get(0, edge_data) if isinstance(edge_data, dict) else edge_data
             
-
-            # may show multiple edges bc of MultiDiGraph
-            edge_data = G.get_edge_data(u, v)
+            # get the street name
+            street_name = edge_info.get('name', 'Unnamed road')
             
-            if edge_data:
-                # if multiple edges exist, get the first one
-                edge_info = edge_data.get(0, edge_data) if isinstance(edge_data, dict) else edge_data
-                
-                # get the street name
-                street_name = edge_info.get('name', 'Unnamed road')
-                
-                # handle cases where name might be a list
-                if isinstance(street_name, list):
-                    street_name = ', '.join(street_name)
-                
-                edge_names.append(street_name)
-                print(f"  {u} -> {v}: {street_name}")
-        
-        # store edge names in routes dictionary
-        routes[shelter]["edge_names"] = edge_names
-        routes[shelter]["unique_streets"] = list(set(edge_names))
-        
-        print(f"Total edges: {len(edge_names)}")
-        print(f"Unique streets: {routes[shelter]['unique_streets']}")
-        # ox.plot_graph_routes(G, paths, route_linewidths=3, route_colors=ox.plot.get_colors(n=len(paths)), node_size=0)
+            # handle cases where name might be a list
+            if isinstance(street_name, list):
+                street_name = ', '.join(street_name)
+            
+            edge_names.append(street_name)
+            print(f"  {u} -> {v}: {street_name}")
+    
+    # store edge names in routes dictionary
+    routes[shelter]["edge_names"] = edge_names
+    routes[shelter]["unique_streets"] = list(set(edge_names))
+    
+    print(f"Total edges: {len(edge_names)}")
+    print(f"Unique streets: {routes[shelter]['unique_streets']}")
+    # ox.plot_graph_routes(G, paths, route_linewidths=3, route_colors=ox.plot.get_colors(n=len(paths)), node_size=0)
 
-    print("\nRoute Summaries:")
-    for shelter, route_info in routes.items():
-        miles = route_info['length'] / 1609.34
-        print(f"\n{shelter}:")
-        print(f"  Distance: {miles:.2f} miles ({route_info['length']:.2f} meters)")
-        print(f"  Streets: {' -> '.join(route_info['unique_streets'])}")
+print("\nRoute Summaries:")
+for shelter, route_info in routes.items():
+    miles = route_info['length'] / 1609.34
+    print(f"\n{shelter}:")
+    print(f"  Distance: {miles:.2f} miles ({route_info['length']:.2f} meters)")
+    print(f"  Streets: {' -> '.join(route_info['unique_streets'])}")
 
     # print(paths)
 
