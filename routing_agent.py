@@ -10,7 +10,7 @@ from pyproj import Transformer
 # G = ox.graph_from_place("Connecticut, USA", network_type="drive")
 # ox.save_graphml(G, "connecticut_drive.graphml")
 
-# # Convert GraphML to pickle (do this once to speed up loading)
+# Convert GraphML to pickle
 # G = nx.read_graphml("connecticut_drive.graphml")
 # for node in G.nodes():
 #     G.nodes[node]['x'] = float(G.nodes[node]['x'])
@@ -22,64 +22,128 @@ from pyproj import Transformer
 #     pickle.dump(G, f)
 # print("Saved pickle file")
 
-
-
 with open('connecticut_drive.pkl', 'rb') as f:
     G = pickle.load(f)
  
 
 # example json from data agent for building and testing
+# example_json = {
+#     "input_location": {
+#         "lat": 41.807,
+#         "lon": -72.253
+#     },
+#     "nearest_shelters": [
+#         {
+#             "name": "University Of Connecticut Guyer Gym",
+#             "address": "2111 Hillside Rd",
+#             "city": "STORRS MANSFIELD",
+#             "state": "CT",
+#             "zip": "06269",
+#             "status": "CLOSED",
+#             "lat": 5132161.261238727,
+#             "lon": -8043465.968835316,
+#             "distance_miles": 0.19
+#         },
+#         {
+#             "name": "University Of Connecticut Gampel Pavilion",
+#             "address": "2095 HILLSIDE RD",
+#             "city": "STORRS MANSFIELD",
+#             "state": "CT",
+#             "zip": "06269",
+#             "status": "CLOSED",
+#             "lat": 5132225.729440598,
+#             "lon": -8043518.027061226,
+#             "distance_miles": 0.23
+#         },
+#         {
+#             "name": "Mansfield Community Center",
+#             "address": "4 South Eagleville Rd.",
+#             "city": "MANSFIELD",
+#             "state": "CT",
+#             "zip": "06268",
+#             "status": "CLOSED",
+#             "lat": 5131221.947840509,
+#             "lon": -8041858.755949676,
+#             "distance_miles": 0.98
+#         }
+#     ]
+# }
+
 example_json = {
-    "input_location": {
-        "lat": 41.807,
-        "lon": -72.253
+  "input_location": {
+    "lat": 41.40462,
+    "lon": -72.35370
+  },
+  "nearest_shelters": [
+    {
+      "name": "Deep River Elementary",
+      "address": "12 RIVER ST",
+      "city": "DEEP RIVER",
+      "state": "CT",
+      "zip": "06417",
+      "status": "CLOSED",
+      "lat": 41.38681131300007,
+      "lon": -72.43471220699996,
+      "distance_miles": 4.39,
+      "handicap_accessible": "No",
     },
-    "nearest_shelters": [
-        {
-            "name": "University Of Connecticut Guyer Gym",
-            "address": "2111 Hillside Rd",
-            "city": "STORRS MANSFIELD",
-            "state": "CT",
-            "zip": "06269",
-            "status": "CLOSED",
-            "lat": 5132161.261238727,
-            "lon": -8043465.968835316,
-            "distance_miles": 0.19
-        },
-        {
-            "name": "University Of Connecticut Gampel Pavilion",
-            "address": "2095 HILLSIDE RD",
-            "city": "STORRS MANSFIELD",
-            "state": "CT",
-            "zip": "06269",
-            "status": "CLOSED",
-            "lat": 5132225.729440598,
-            "lon": -8043518.027061226,
-            "distance_miles": 0.23
-        },
-        {
-            "name": "Mansfield Community Center",
-            "address": "4 South Eagleville Rd.",
-            "city": "MANSFIELD",
-            "state": "CT",
-            "zip": "06268",
-            "status": "CLOSED",
-            "lat": 5131221.947840509,
-            "lon": -8041858.755949676,
-            "distance_miles": 0.98
-        }
-    ]
+    {
+      "name": "St Josephs Parish Center",
+      "address": "48 MIDDLESEX AVE",
+      "city": "CHESTER",
+      "state": "CT",
+      "zip": "06412",
+      "status": "CLOSED",
+      "lat": 41.411209919000044,
+      "lon": -72.43990129499997,
+      "distance_miles": 4.5,
+      "handicap_accessible": "No",
+    },
+    {
+      "name": "Essex Elementary School",
+      "address": "108 MAIN ST",
+      "city": "CENTERBROOK",
+      "state": "CT",
+      "zip": "06409",
+      "status": "CLOSED",
+      "lat": 41.35193560500005,
+      "lon": -72.40958514999994,
+      "distance_miles": 4.65,
+      "handicap_accessible": "No",
+    },
+    {
+      "name": "John Winthrop Middle School",
+      "address": "1 Winthrop Road",
+      "city": "DEEP RIVER",
+      "state": "CT",
+      "zip": "06417",
+      "status": "CLOSED",
+      "lat": 41.36907668200007,
+      "lon": -72.45753699999995,
+      "distance_miles": 5.93,
+      "handicap_accessible": "No",
+    },
+    {
+      "name": "Old Lyme High School",
+      "address": "69 Lyme Street",
+      "city": "OLD LYME",
+      "state": "CT",
+      "zip": "06371",
+      "status": "CLOSED",
+      "lat": 41.318184048000035,
+      "lon": -72.32950052199999,
+      "distance_miles": 6.1,
+      "handicap_accessible": "No",
+    }
+  ]
 }
 
 # towns = list(set(shelter["city"] for shelter in example_json["nearest_shelters"]))
 # state = 'CT'
 
-
-transformer = Transformer.from_crs("EPSG:3857", "EPSG:4326", always_xy=True)
-
 shelters = {}
 for s in example_json["nearest_shelters"]:
-    lon, lat = transformer.transform(s["lon"], s["lat"])
+    lon, lat = (s["lon"], s["lat"])
     shelters[s["name"]] = [lat, lon]
 
 
