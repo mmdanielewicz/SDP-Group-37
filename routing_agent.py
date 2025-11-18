@@ -7,6 +7,23 @@ from pyproj import Transformer
 
 
 # plot the pickle file (pickle was like 3 times faster than graphml)
+# G = ox.graph_from_place("Connecticut, USA", network_type="drive")
+# ox.save_graphml(G, "connecticut_drive.graphml")
+
+# # Convert GraphML to pickle (do this once to speed up loading)
+# G = nx.read_graphml("connecticut_drive.graphml")
+# for node in G.nodes():
+#     G.nodes[node]['x'] = float(G.nodes[node]['x'])
+#     G.nodes[node]['y'] = float(G.nodes[node]['y'])
+# for u, v, key, data in G.edges(keys=True, data=True):
+#     if 'length' in data:
+#         G[u][v][key]['length'] = float(data['length'])
+# with open('connecticut_drive.pkl', 'wb') as f:
+#     pickle.dump(G, f)
+# print("Saved pickle file")
+
+
+
 with open('connecticut_drive.pkl', 'rb') as f:
     G = pickle.load(f)
  
