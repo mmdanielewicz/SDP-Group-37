@@ -3,15 +3,4 @@ data/hazards/
 
 
 # Ignore large geospatial and data files
-*.shp
-*.shx
-*.dbf
-*.prj
-*.cpg
 *.zip
-*.csv
-
-# Keep code and config files
-!requirements.txt
-!*.py
-!*.sql
