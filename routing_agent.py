@@ -146,6 +146,46 @@ for shelter, route_info in routes.items():
 # create map centered on user location
 m = folium.Map(location=[user_lat, user_lon], zoom_start=14)
 
+sidebar_html = """
+<div style="position: fixed; 
+            top: 10px; 
+            right: 10px; 
+            width: 350px; 
+            height: 90vh; 
+            background-color: white; 
+            border: 2px solid black; 
+            border-radius: 5px;
+            z-index: 9999; 
+            padding: 15px;">
+    <h3 style="margin-top: 0; margin-bottom: 15px; color: #333;">Shelter Routes</h3>
+"""
+
+for name, route_info in routes.items():
+    miles = route_info['length'] / 1609.34
+    sidebar_html += f"""
+    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+        <h4 style="color: red; margin-bottom: 5px;">{name}</h4>
+        <p style="margin: 5px 0; font-size: 14px;"><strong>Distance:</strong> {miles:.2f} miles</p>
+        <p style="margin: 5px 0; font-size: 12px;"><strong>Directions:</strong></p>
+        <ol style="margin: 5px 0; padding-left: 20px; font-size: 12px;">
+"""
+    
+    # Add turn-by-turn directions
+    prev_street = None
+    for street in route_info['edge_names']:
+        if street != prev_street:  # Only show when street changes
+            sidebar_html += f"<li>{street}</li>"
+            prev_street = street
+    
+    sidebar_html += """
+        </ol>
+    </div>
+"""
+
+sidebar_html += "</div>"
+
+m.get_root().html.add_child(folium.Element(sidebar_html))
+
 # add marker for user location
 folium.Marker(
     [user_lat, user_lon],

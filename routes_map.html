@@ -17,7 +17,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_815de4eab87a5f8b451cdde8b41fa25a {
+                #map_053e989f5854013582d558f023b6ba35 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -54,14 +54,54 @@
 <body>
     
     
-            <div class="folium-map" id="map_815de4eab87a5f8b451cdde8b41fa25a" ></div>
+<div style="position: fixed; 
+            top: 10px; 
+            right: 10px; 
+            width: 350px; 
+            height: 90vh; 
+            background-color: white; 
+            border: 2px solid black; 
+            border-radius: 5px;
+            z-index: 9999; 
+            padding: 15px;">
+    <h3 style="margin-top: 0; margin-bottom: 15px; color: #333;">Shelter Routes</h3>
+
+    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+        <h4 style="color: red; margin-bottom: 5px;">University Of Connecticut Guyer Gym</h4>
+        <p style="margin: 5px 0; font-size: 14px;"><strong>Distance:</strong> 1.33 miles</p>
+        <p style="margin: 5px 0; font-size: 12px;"><strong>Directions:</strong></p>
+        <ol style="margin: 5px 0; padding-left: 20px; font-size: 12px;">
+<li>Babbidge Road</li><li>Mansfield Road</li><li>Storrs Road</li><li>North Eagleville Road</li><li>Glenbrook Road</li>
+        </ol>
+    </div>
+
+    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+        <h4 style="color: red; margin-bottom: 5px;">University Of Connecticut Gampel Pavilion</h4>
+        <p style="margin: 5px 0; font-size: 14px;"><strong>Distance:</strong> 1.33 miles</p>
+        <p style="margin: 5px 0; font-size: 12px;"><strong>Directions:</strong></p>
+        <ol style="margin: 5px 0; padding-left: 20px; font-size: 12px;">
+<li>Babbidge Road</li><li>Mansfield Road</li><li>Storrs Road</li><li>North Eagleville Road</li><li>Glenbrook Road</li>
+        </ol>
+    </div>
+
+    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+        <h4 style="color: red; margin-bottom: 5px;">Mansfield Community Center</h4>
+        <p style="margin: 5px 0; font-size: 14px;"><strong>Distance:</strong> 0.86 miles</p>
+        <p style="margin: 5px 0; font-size: 12px;"><strong>Directions:</strong></p>
+        <ol style="margin: 5px 0; padding-left: 20px; font-size: 12px;">
+<li>Babbidge Road</li><li>Mansfield Road</li><li>Storrs Road</li>
+        </ol>
+    </div>
+</div>
+    
+            <div class="folium-map" id="map_053e989f5854013582d558f023b6ba35" ></div>
         
 </body>
 <script>
     
     
-            var map_815de4eab87a5f8b451cdde8b41fa25a = L.map(
-                "map_815de4eab87a5f8b451cdde8b41fa25a",
+            var map_053e989f5854013582d558f023b6ba35 = L.map(
+                "map_053e989f5854013582d558f023b6ba35",
                 {
                     center: [41.807, -72.253],
                     crs: L.CRS.EPSG3857,
@@ -78,7 +118,7 @@
 
         
     
-            var tile_layer_e0b5971b36128afb41ecf62c2e5d4422 = L.tileLayer(
+            var tile_layer_0162b2b044c100df48182dd11b584657 = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
   "minZoom": 0,
@@ -95,17 +135,17 @@
             );
         
     
-            tile_layer_e0b5971b36128afb41ecf62c2e5d4422.addTo(map_815de4eab87a5f8b451cdde8b41fa25a);
+            tile_layer_0162b2b044c100df48182dd11b584657.addTo(map_053e989f5854013582d558f023b6ba35);
         
     
-            var marker_fae98ea6338f773ed51fd1db05b76bd1 = L.marker(
+            var marker_5d675bf5a58703e3e8463416e4695e4f = L.marker(
                 [41.807, -72.253],
                 {
 }
-            ).addTo(map_815de4eab87a5f8b451cdde8b41fa25a);
+            ).addTo(map_053e989f5854013582d558f023b6ba35);
         
     
-            var icon_247545a116acbada1a859b72ef8fa9d9 = L.AwesomeMarkers.icon(
+            var icon_a009aea79d0929597e543996a71d5249 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "blue",
   "iconColor": "white",
@@ -116,34 +156,34 @@
             );
         
     
-        var popup_e8d4eddeaeb9ca5cfd80cf2451ca100c = L.popup({
+        var popup_d49603455db922e7d34f22eed2bb22d7 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_0e299f4637a0bb9d3d865cdd514a3cee = $(`<div id="html_0e299f4637a0bb9d3d865cdd514a3cee" style="width: 100.0%; height: 100.0%;">User Location</div>`)[0];
-                popup_e8d4eddeaeb9ca5cfd80cf2451ca100c.setContent(html_0e299f4637a0bb9d3d865cdd514a3cee);
+                var html_18a1d7793b4462fa67e8c727df6934e8 = $(`<div id="html_18a1d7793b4462fa67e8c727df6934e8" style="width: 100.0%; height: 100.0%;">User Location</div>`)[0];
+                popup_d49603455db922e7d34f22eed2bb22d7.setContent(html_18a1d7793b4462fa67e8c727df6934e8);
             
         
 
-        marker_fae98ea6338f773ed51fd1db05b76bd1.bindPopup(popup_e8d4eddeaeb9ca5cfd80cf2451ca100c)
+        marker_5d675bf5a58703e3e8463416e4695e4f.bindPopup(popup_d49603455db922e7d34f22eed2bb22d7)
         ;
 
         
     
     
-                marker_fae98ea6338f773ed51fd1db05b76bd1.setIcon(icon_247545a116acbada1a859b72ef8fa9d9);
+                marker_5d675bf5a58703e3e8463416e4695e4f.setIcon(icon_a009aea79d0929597e543996a71d5249);
             
     
-            var marker_dbd9064de6e9038ae174cc4b68bf8615 = L.marker(
+            var marker_0fecce2d1e9761b146dac740ff70bdb3 = L.marker(
                 [41.80732530000006, -72.25568417099998],
                 {
 }
-            ).addTo(map_815de4eab87a5f8b451cdde8b41fa25a);
+            ).addTo(map_053e989f5854013582d558f023b6ba35);
         
     
-            var icon_5f208ccf7376ebfe5c1595121f5343b6 = L.AwesomeMarkers.icon(
+            var icon_e02a72ce1da9fa9d4d53037e9b244090 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -154,34 +194,34 @@
             );
         
     
-        var popup_72cb9a42ae9b0079e07ceaea97f860c1 = L.popup({
+        var popup_e846dc9edf5a97513ebd57add65a0350 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_d25d600ab04cce748e91ab93eb851b42 = $(`<div id="html_d25d600ab04cce748e91ab93eb851b42" style="width: 100.0%; height: 100.0%;">University Of Connecticut Guyer Gym</div>`)[0];
-                popup_72cb9a42ae9b0079e07ceaea97f860c1.setContent(html_d25d600ab04cce748e91ab93eb851b42);
+                var html_e207a27ea1fb7136024192eaba55638c = $(`<div id="html_e207a27ea1fb7136024192eaba55638c" style="width: 100.0%; height: 100.0%;">University Of Connecticut Guyer Gym</div>`)[0];
+                popup_e846dc9edf5a97513ebd57add65a0350.setContent(html_e207a27ea1fb7136024192eaba55638c);
             
         
 
-        marker_dbd9064de6e9038ae174cc4b68bf8615.bindPopup(popup_72cb9a42ae9b0079e07ceaea97f860c1)
+        marker_0fecce2d1e9761b146dac740ff70bdb3.bindPopup(popup_e846dc9edf5a97513ebd57add65a0350)
         ;
 
         
     
     
-                marker_dbd9064de6e9038ae174cc4b68bf8615.setIcon(icon_5f208ccf7376ebfe5c1595121f5343b6);
+                marker_0fecce2d1e9761b146dac740ff70bdb3.setIcon(icon_e02a72ce1da9fa9d4d53037e9b244090);
             
     
-            var marker_117a9d2da7bc958791c21204c8388a90 = L.marker(
+            var marker_2e626f02edb3c7f83330a9db2b6b5ff5 = L.marker(
                 [41.80775697500007, -72.25615181799996],
                 {
 }
-            ).addTo(map_815de4eab87a5f8b451cdde8b41fa25a);
+            ).addTo(map_053e989f5854013582d558f023b6ba35);
         
     
-            var icon_4d7a7e2473eccfb79f11f3b98bb36dbb = L.AwesomeMarkers.icon(
+            var icon_18aba51b4447e3d0a79420a85027e30b = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -192,34 +232,34 @@
             );
         
     
-        var popup_f18bfec6506149def38d662ad4817a73 = L.popup({
+        var popup_704fe8fe2c6be59ff09bfb52543cb95a = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_4c701be957ed1559760b618b9f646233 = $(`<div id="html_4c701be957ed1559760b618b9f646233" style="width: 100.0%; height: 100.0%;">University Of Connecticut Gampel Pavilion</div>`)[0];
-                popup_f18bfec6506149def38d662ad4817a73.setContent(html_4c701be957ed1559760b618b9f646233);
+                var html_90bb16df282e8fc31f8c713efb2e3040 = $(`<div id="html_90bb16df282e8fc31f8c713efb2e3040" style="width: 100.0%; height: 100.0%;">University Of Connecticut Gampel Pavilion</div>`)[0];
+                popup_704fe8fe2c6be59ff09bfb52543cb95a.setContent(html_90bb16df282e8fc31f8c713efb2e3040);
             
         
 
-        marker_117a9d2da7bc958791c21204c8388a90.bindPopup(popup_f18bfec6506149def38d662ad4817a73)
+        marker_2e626f02edb3c7f83330a9db2b6b5ff5.bindPopup(popup_704fe8fe2c6be59ff09bfb52543cb95a)
         ;
 
         
     
     
-                marker_117a9d2da7bc958791c21204c8388a90.setIcon(icon_4d7a7e2473eccfb79f11f3b98bb36dbb);
+                marker_2e626f02edb3c7f83330a9db2b6b5ff5.setIcon(icon_18aba51b4447e3d0a79420a85027e30b);
             
     
-            var marker_ac650ebeaf24a23ee77e0ec6d7f213bf = L.marker(
+            var marker_89f26f3ff28e7bdb998070d66cc1cc99 = L.marker(
                 [41.80103538700007, -72.24124633199993],
                 {
 }
-            ).addTo(map_815de4eab87a5f8b451cdde8b41fa25a);
+            ).addTo(map_053e989f5854013582d558f023b6ba35);
         
     
-            var icon_f8a6e203e24aa7f1c8fe1b9805d11e06 = L.AwesomeMarkers.icon(
+            var icon_00663201950c7f35e9b1607b5752ede1 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -230,90 +270,90 @@
             );
         
     
-        var popup_5735cd259e6a1433ba728ee9c04416a5 = L.popup({
+        var popup_7dd2f0650e99c1585af3c20c3771e123 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_67b36f169baf7eac41dc14b588dfa66a = $(`<div id="html_67b36f169baf7eac41dc14b588dfa66a" style="width: 100.0%; height: 100.0%;">Mansfield Community Center</div>`)[0];
-                popup_5735cd259e6a1433ba728ee9c04416a5.setContent(html_67b36f169baf7eac41dc14b588dfa66a);
+                var html_0431c5507301a054c74d932cf58c1ed8 = $(`<div id="html_0431c5507301a054c74d932cf58c1ed8" style="width: 100.0%; height: 100.0%;">Mansfield Community Center</div>`)[0];
+                popup_7dd2f0650e99c1585af3c20c3771e123.setContent(html_0431c5507301a054c74d932cf58c1ed8);
             
         
 
-        marker_ac650ebeaf24a23ee77e0ec6d7f213bf.bindPopup(popup_5735cd259e6a1433ba728ee9c04416a5)
+        marker_89f26f3ff28e7bdb998070d66cc1cc99.bindPopup(popup_7dd2f0650e99c1585af3c20c3771e123)
         ;
 
         
     
     
-                marker_ac650ebeaf24a23ee77e0ec6d7f213bf.setIcon(icon_f8a6e203e24aa7f1c8fe1b9805d11e06);
+                marker_89f26f3ff28e7bdb998070d66cc1cc99.setIcon(icon_00663201950c7f35e9b1607b5752ede1);
             
     
-            var poly_line_d8370c11552fee77b85f81bdec91e4f7 = L.polyline(
+            var poly_line_6cad53fb99237c21d99f1a9b1850571e = L.polyline(
                 [[41.8073241, -72.2517942], [41.8077262, -72.2491963], [41.8077262, -72.2491963], [41.8067995, -72.2487198], [41.8067995, -72.2487198], [41.8061046, -72.2477834], [41.8061046, -72.2477834], [41.8054928, -72.2461841], [41.8054928, -72.2461841], [41.8054999, -72.2459065], [41.8054999, -72.2459065], [41.805868, -72.2449608], [41.805868, -72.2449608], [41.8069507, -72.2458452], [41.8069507, -72.2458452], [41.8082423, -72.2468907], [41.8082423, -72.2468907], [41.8107131, -72.2489196], [41.8107131, -72.2489196], [41.81148, -72.2495819], [41.81148, -72.2495819], [41.8116523, -72.2497354], [41.8116523, -72.2497354], [41.8113783, -72.251191], [41.8113783, -72.251191], [41.8113053, -72.2511984], [41.8113053, -72.2511984], [41.8082926, -72.2551536]],
                 {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "green", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
-            ).addTo(map_815de4eab87a5f8b451cdde8b41fa25a);
+            ).addTo(map_053e989f5854013582d558f023b6ba35);
         
     
-        var popup_6415699e3df80e99de33c1efb68efa0d = L.popup({
+        var popup_b2c129956014da04c4c22acec0118c9d = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_ccc9af4b3927048287167f5000540de4 = $(`<div id="html_ccc9af4b3927048287167f5000540de4" style="width: 100.0%; height: 100.0%;">Route to University Of Connecticut Guyer Gym</div>`)[0];
-                popup_6415699e3df80e99de33c1efb68efa0d.setContent(html_ccc9af4b3927048287167f5000540de4);
+                var html_efc06927ccd6660c51e59c5e0639d64e = $(`<div id="html_efc06927ccd6660c51e59c5e0639d64e" style="width: 100.0%; height: 100.0%;">Route to University Of Connecticut Guyer Gym</div>`)[0];
+                popup_b2c129956014da04c4c22acec0118c9d.setContent(html_efc06927ccd6660c51e59c5e0639d64e);
             
         
 
-        poly_line_d8370c11552fee77b85f81bdec91e4f7.bindPopup(popup_6415699e3df80e99de33c1efb68efa0d)
+        poly_line_6cad53fb99237c21d99f1a9b1850571e.bindPopup(popup_b2c129956014da04c4c22acec0118c9d)
         ;
 
         
     
     
-            var poly_line_116254d8843ebb29e7f0dd485530048f = L.polyline(
+            var poly_line_cb64f9f4b616bfeb4e6251c7ff1836ba = L.polyline(
                 [[41.8073241, -72.2517942], [41.8077262, -72.2491963], [41.8077262, -72.2491963], [41.8067995, -72.2487198], [41.8067995, -72.2487198], [41.8061046, -72.2477834], [41.8061046, -72.2477834], [41.8054928, -72.2461841], [41.8054928, -72.2461841], [41.8054999, -72.2459065], [41.8054999, -72.2459065], [41.805868, -72.2449608], [41.805868, -72.2449608], [41.8069507, -72.2458452], [41.8069507, -72.2458452], [41.8082423, -72.2468907], [41.8082423, -72.2468907], [41.8107131, -72.2489196], [41.8107131, -72.2489196], [41.81148, -72.2495819], [41.81148, -72.2495819], [41.8116523, -72.2497354], [41.8116523, -72.2497354], [41.8113783, -72.251191], [41.8113783, -72.251191], [41.8113053, -72.2511984], [41.8113053, -72.2511984], [41.8082926, -72.2551536]],
                 {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "green", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
-            ).addTo(map_815de4eab87a5f8b451cdde8b41fa25a);
+            ).addTo(map_053e989f5854013582d558f023b6ba35);
         
     
-        var popup_8e95bf594cb194ac50237d42b1412280 = L.popup({
+        var popup_3abe6f4c94ffc533aa1e01ffadec28e5 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_16b27a5f1d4c6410abb022f2c48cadcd = $(`<div id="html_16b27a5f1d4c6410abb022f2c48cadcd" style="width: 100.0%; height: 100.0%;">Route to University Of Connecticut Gampel Pavilion</div>`)[0];
-                popup_8e95bf594cb194ac50237d42b1412280.setContent(html_16b27a5f1d4c6410abb022f2c48cadcd);
+                var html_fd16ed25eb170279a3485cd189409ce0 = $(`<div id="html_fd16ed25eb170279a3485cd189409ce0" style="width: 100.0%; height: 100.0%;">Route to University Of Connecticut Gampel Pavilion</div>`)[0];
+                popup_3abe6f4c94ffc533aa1e01ffadec28e5.setContent(html_fd16ed25eb170279a3485cd189409ce0);
             
         
 
-        poly_line_116254d8843ebb29e7f0dd485530048f.bindPopup(popup_8e95bf594cb194ac50237d42b1412280)
+        poly_line_cb64f9f4b616bfeb4e6251c7ff1836ba.bindPopup(popup_3abe6f4c94ffc533aa1e01ffadec28e5)
         ;
 
         
     
     
-            var poly_line_26dda6901e56afed0cabb426036d699b = L.polyline(
+            var poly_line_9ff1b34eee1d61fef5c306e01c4c4492 = L.polyline(
                 [[41.8073241, -72.2517942], [41.8077262, -72.2491963], [41.8077262, -72.2491963], [41.8067995, -72.2487198], [41.8067995, -72.2487198], [41.8061046, -72.2477834], [41.8061046, -72.2477834], [41.8054928, -72.2461841], [41.8054928, -72.2461841], [41.8054999, -72.2459065], [41.8054999, -72.2459065], [41.805868, -72.2449608], [41.805868, -72.2449608], [41.8048389, -72.244097], [41.8048389, -72.244097], [41.804717, -72.2439997], [41.804717, -72.2439997], [41.8042581, -72.243653], [41.8042581, -72.243653], [41.803439, -72.2429837], [41.803439, -72.2429837], [41.8031073, -72.2427126], [41.8031073, -72.2427126], [41.8022034, -72.2419473], [41.8022034, -72.2419473], [41.8011073, -72.2410591]],
                 {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "green", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
-            ).addTo(map_815de4eab87a5f8b451cdde8b41fa25a);
+            ).addTo(map_053e989f5854013582d558f023b6ba35);
         
     
-        var popup_05b6088e210aa6e99d9edb04040e6774 = L.popup({
+        var popup_03ff4d8e5a856791b337b84bb7782654 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_ffc3ec89c9cc6c58dcc3ba8ab08f7190 = $(`<div id="html_ffc3ec89c9cc6c58dcc3ba8ab08f7190" style="width: 100.0%; height: 100.0%;">Route to Mansfield Community Center</div>`)[0];
-                popup_05b6088e210aa6e99d9edb04040e6774.setContent(html_ffc3ec89c9cc6c58dcc3ba8ab08f7190);
+                var html_d1605442627ab4695966d69a8791b748 = $(`<div id="html_d1605442627ab4695966d69a8791b748" style="width: 100.0%; height: 100.0%;">Route to Mansfield Community Center</div>`)[0];
+                popup_03ff4d8e5a856791b337b84bb7782654.setContent(html_d1605442627ab4695966d69a8791b748);
             
         
 
-        poly_line_26dda6901e56afed0cabb426036d699b.bindPopup(popup_05b6088e210aa6e99d9edb04040e6774)
+        poly_line_9ff1b34eee1d61fef5c306e01c4c4492.bindPopup(popup_03ff4d8e5a856791b337b84bb7782654)
         ;
 
         
