@@ -2,20 +2,14 @@ import osmnx as ox
 import networkx as nx
 import geopandas as gpd
 import folium
+import pickle
 from pyproj import Transformer
 
 
-# plot the graphml file
-G = nx.read_graphml("connecticut_drive.graphml")
-
-for node in G.nodes():
-    G.nodes[node]['x'] = float(G.nodes[node]['x'])
-    G.nodes[node]['y'] = float(G.nodes[node]['y'])
-
-for u, v, key, data in G.edges(keys=True, data=True):
-    if 'length' in data:
-        G[u][v][key]['length'] = float(data['length'])
-
+# plot the pickle file (pickle was like 3 times faster than graphml)
+with open('connecticut_drive.pkl', 'rb') as f:
+    G = pickle.load(f)
+ 
 
 # example json from data agent for building and testing
 example_json = {
@@ -103,7 +97,7 @@ for shelter, route_info in routes.items():
     edge_names = []
     
     print(f"\nRoute to {shelter}:")
-    
+
     for i in range(len(path) - 1):
         u = path[i]  
         v = path[i + 1] 
