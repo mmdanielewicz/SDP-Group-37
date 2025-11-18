@@ -31,7 +31,7 @@ class DataAgent:
         self.df["shelter_na"] = self.df["shelter_na"].astype(str).apply(self.clean_text)
 
         # --- Load FEMA Flood Hazard Layer ---
-        hazard_path = os.path.join(base_path, "hazards", "CT_Flood_Zones.shp")
+        hazard_path = os.path.join(base_path, "hazards", "floods", "CT_Flood_Zones.shp")
         if os.path.exists(hazard_path):
             self.hazards = {
                 "fema_flood": gpd.read_file(hazard_path).to_crs("EPSG:4326")
@@ -83,6 +83,34 @@ class DataAgent:
         text = text.replace("Connecticuit", "Connecticut")
         return text
     
+
+    # -------------------------------------------------------------------
+    def _dedupe_by_name_city(self, df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        """
+        Collapse records that look like the same shelter (same name+city+state),
+        keeping the one that is closest to the user (smallest distance_miles).
+
+        Assumes df already has a 'distance_miles' column.
+        """
+        if df.empty:
+            return df
+
+        tmp = df.copy()
+
+        # Normalize for grouping (re-use your existing text cleaner)
+        tmp["name_norm"] = tmp["name"].fillna("").map(self._normalize_text)
+        tmp["city_norm"] = tmp["city"].fillna("").map(self._normalize_text)
+
+        # Make sure closest shelters come first
+        tmp = tmp.sort_values("distance_miles")
+
+        # Group by normalized name + city + state, keep the first (closest) row
+        grouped = tmp.groupby(["name_norm", "city_norm", "state"], as_index=False, sort=False).first()
+
+        # Drop helper columns
+        return grouped.drop(columns=["name_norm", "city_norm"])
+
+    
     #-----------------------------------------------------
     @staticmethod
     def classify_flood_risk(zone: str, subtype: str = "", sfha_tf=None) -> str:
@@ -104,6 +132,8 @@ class DataAgent:
             return "Low"
         return "Unknown"
 
+
+
     # -------------------------------------------------------------
     def get_nearest_shelters(self, lat, lon, limit=3, state_filter=None):
         """Find nearest shelters using true geodesic distance (WGS84)."""
@@ -121,17 +151,24 @@ class DataAgent:
         df_filtered["distance_miles"] = df_filtered.geometry.apply(dist_miles)
         nearest = df_filtered.nsmallest(limit, "distance_miles")
 
-        # Deduplicate while ensuring we still get 3 total shelters
-        deduped = pd.DataFrame()
-        seen = set()
-        for _, row in df_filtered.nsmallest(limit * 2, "distance_miles").iterrows():  # take a slightly larger pool
-            key = (row["shelter_na"].lower(), row["address_1"].lower())
-            if key not in seen:
-                seen.add(key)
-                deduped = pd.concat([deduped, pd.DataFrame([row])])
-            if len(deduped) == limit:
-                break
-        nearest = deduped
+        # Build a normalized dedup key (name + city + state)
+        df_filtered["_dedup_key"] = (
+            df_filtered["shelter_na"].fillna("").str.strip().str.lower() + "|" +
+            df_filtered["city"].fillna("").str.strip().str.lower() + "|" +
+            df_filtered["state"].fillna("").str.strip().str.lower()
+        )
+
+        # Sort so closest always wins first
+        df_filtered = df_filtered.sort_values("distance_miles", ascending=True)
+
+        # Drop duplicates using normalized key but keep closest record
+        df_filtered = df_filtered.drop_duplicates(subset="_dedup_key", keep="first")
+
+        # Now select final nearest shelters
+        nearest = df_filtered.head(limit)
+
+        # Cleanup temp column
+        df_filtered = df_filtered.drop(columns=["_dedup_key"])
 
         results = {
             "input_location": {"lat": lat, "lon": lon},
@@ -171,17 +208,19 @@ class DataAgent:
                 "status": row.get("shelter_st", "Unknown"),
                 "lat": row.geometry.y,
                 "lon": row.geometry.x,
-                "distance_miles": round(row.distance_miles, 2),
+                "straightline_distance_miles": round(row.distance_miles, 2),
                 "handicap_accessible": row.get("handicap_accessible", "No"),
                 "hazard_polygons": hazards_here or None
             })
 
         return results
 
+
+
     # -------------------------------------------------------------
     def handle_query(self, lat, lon, state=None):
         """Handle a query by coordinates."""
-        data = self.get_nearest_shelters(lat, lon, limit=5, state_filter=state)
+        data = self.get_nearest_shelters(lat, lon, limit=20, state_filter=state)
         print(json.dumps(data, indent=2))
         return data
 
@@ -191,4 +230,4 @@ if __name__ == "__main__":
     agent = DataAgent(base_path="data")
 
     # Example usage: use direct coordinates
-    agent.handle_query(lat=41.215, lon=-73.063, state="CT")
+    agent.handle_query(lat=41.2940, lon=-72.3768, state="CT")
