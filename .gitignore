@@ -1,0 +1,9 @@
+# Ignore raw data but allow zip versions 
+data/raw/*.shp
+data/raw/*.dbf
+data/raw/*.shx
+data/raw/*.prj
+data/raw/*.xml
+data/raw/*.cpg
+!data/raw/*.zip
+!data/raw/README.md
