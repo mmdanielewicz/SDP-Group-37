@@ -1,5 +1,5 @@
 # Ignore all hazard data folders and large files
-data/hazards/
+data-agent/data/hazards/
 
 
 # Ignore large geospatial and data files
