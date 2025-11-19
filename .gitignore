@@ -18,3 +18,8 @@ data-agent/*.zip
 src/__pycache__/*
 src/data-agent/__pycache__/*
 src/orchestration/__pycache__/*
+
+# Ignore routing generated files in remote
+connecticut_drive.graphml
+connecticut_drive.pkl
+routes_map.html
