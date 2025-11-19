@@ -11,6 +11,10 @@ data/raw/*.cpg
 # Ignore all hazard data folders and large files
 data-agent/data/hazards/
 
-
 # Ignore large geospatial and data files
 data-agent/*.zip
+
+# Ignore pycache
+src/__pycache__
+src/data-agent/__pycache__
+src/orchestration/__pycache__
