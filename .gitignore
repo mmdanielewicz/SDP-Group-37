@@ -1,4 +1,25 @@
+# Ignore raw data but allow zip versions 
+data/raw/*.shp
+data/raw/*.dbf
+data/raw/*.shx
+data/raw/*.prj
+data/raw/*.xml
+data/raw/*.cpg
+!data/raw/*.zip
+!data/raw/README.md
+
+# Ignore all hazard data folders and large files
+data-agent/data/hazards/
+
+# Ignore large geospatial and data files
+data-agent/*.zip
+
+# Ignore pycache
+src/__pycache__/*
+src/data-agent/__pycache__/*
+src/orchestration/__pycache__/*
+
+# Ignore routing generated files in remote
 connecticut_drive.graphml
 connecticut_drive.pkl
 routes_map.html
-connecticut-251117.osm.pbf
