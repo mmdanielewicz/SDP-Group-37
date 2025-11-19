@@ -3,14 +3,13 @@ import networkx as nx
 import geopandas as gpd
 import folium
 import pickle
-from pyproj import Transformer
+from math import atan2, degrees
 
-
-# plot the pickle file (pickle was like 3 times faster than graphml)
+# # plot the pickle file (pickle was like 3 times faster than graphml)
 # G = ox.graph_from_place("Connecticut, USA", network_type="drive")
 # ox.save_graphml(G, "connecticut_drive.graphml")
 
-# Convert GraphML to pickle
+# # Convert GraphML to pickle
 # G = nx.read_graphml("connecticut_drive.graphml")
 # for node in G.nodes():
 #     G.nodes[node]['x'] = float(G.nodes[node]['x'])
@@ -71,70 +70,46 @@ with open('connecticut_drive.pkl', 'rb') as f:
 
 example_json = {
   "input_location": {
-    "lat": 41.40462,
-    "lon": -72.35370
+    "lat": 41.293774,
+    "lon": -72.378348
   },
   "nearest_shelters": [
     {
-      "name": "Deep River Elementary",
-      "address": "12 RIVER ST",
-      "city": "DEEP RIVER",
+      "name": "Old Saybrook High School",
+      "address": "1111 BOSTON POST RD",
+      "city": "OLD SAYBROOK",
       "state": "CT",
-      "zip": "06417",
+      "zip": "06475",
       "status": "CLOSED",
-      "lat": 41.38681131300007,
-      "lon": -72.43471220699996,
-      "distance_miles": 4.39,
+      "lat": 41.28841649000003,
+      "lon": -72.38944033599995,
+      "distance_miles": 0.69,
       "handicap_accessible": "No",
     },
     {
-      "name": "St Josephs Parish Center",
-      "address": "48 MIDDLESEX AVE",
-      "city": "CHESTER",
-      "state": "CT",
-      "zip": "06412",
-      "status": "CLOSED",
-      "lat": 41.411209919000044,
-      "lon": -72.43990129499997,
-      "distance_miles": 4.5,
-      "handicap_accessible": "No",
-    },
-    {
-      "name": "Essex Elementary School",
-      "address": "108 MAIN ST",
-      "city": "CENTERBROOK",
-      "state": "CT",
-      "zip": "06409",
-      "status": "CLOSED",
-      "lat": 41.35193560500005,
-      "lon": -72.40958514999994,
-      "distance_miles": 4.65,
-      "handicap_accessible": "No",
-    },
-    {
-      "name": "John Winthrop Middle School",
-      "address": "1 Winthrop Road",
-      "city": "DEEP RIVER",
-      "state": "CT",
-      "zip": "06417",
-      "status": "CLOSED",
-      "lat": 41.36907668200007,
-      "lon": -72.45753699999995,
-      "distance_miles": 5.93,
-      "handicap_accessible": "No",
-    },
-    {
-      "name": "Old Lyme High School",
-      "address": "69 Lyme Street",
+      "name": "Old Lyme Center School",
+      "address": "49 Lyme Street",
       "city": "OLD LYME",
       "state": "CT",
       "zip": "06371",
       "status": "CLOSED",
-      "lat": 41.318184048000035,
-      "lon": -72.32950052199999,
-      "distance_miles": 6.1,
+      "lat": 41.31681707900003,
+      "lon": -72.32970736699997,
+      "distance_miles": 2.99,
       "handicap_accessible": "No",
-    }
+    },
+    {
+      "name": "Old Lyme Town Hall",
+      "address": "52 Lyme Street",
+      "city": "OLD LYME",
+      "state": "CT",
+      "zip": "06371",
+      "status": "CLOSED",
+      "lat": 41.316871038000045,
+      "lon": -72.32970736699997,
+      "distance_miles": 2.99,
+      "handicap_accessible": "Yes",
+    },
   ]
 }
 
@@ -146,21 +121,27 @@ for s in example_json["nearest_shelters"]:
     lon, lat = (s["lon"], s["lat"])
     shelters[s["name"]] = [lat, lon]
 
-
-# print(closest)
-# print(towns)
-
-# for t in towns:
-    # place = f"{t}, {state}"
-    # G = ox.graph_from_place(place, network_type='drive')
-    # print(f"Loaded road network with {len(G.nodes)} nodes, {len(G.edges)} edges.")
-
-
+# User location setup
 user_lat, user_lon = example_json["input_location"]["lat"], example_json["input_location"]["lon"]
 user_node = str(ox.distance.nearest_nodes(G, X=user_lon, Y=user_lat))
 
-# print(shelters)
+# functions for computing actual directions based on edge angles
+def compute_bearing(lat1, lon1, lat2, lon2):
+    angle = atan2((lon2 - lon1), (lat2 - lat1))
+    bearing = degrees(angle)
+    return (bearing + 360) % 360
 
+def turn_direction(b1, b2):
+    diff = (b2 - b1 + 360) % 360
+    if diff < 30 or diff > 330:
+        return "Continue straight"
+    elif diff < 180:
+        return "Turn right"
+    else:
+        return "Turn left"
+
+
+# compute routes
 routes = {}
 for name, (lat, lon) in shelters.items():
     try:
@@ -176,7 +157,10 @@ for name, (lat, lon) in shelters.items():
 for shelter, route_info in routes.items():
     path = route_info["path"]
     edge_names = []
-    
+    directions = []
+    prev_bearing = None
+    prev_street = None
+
     print(f"\nRoute to {shelter}:")
 
     for i in range(len(path) - 1):
@@ -192,21 +176,42 @@ for shelter, route_info in routes.items():
             edge_info = edge_data.get(0, edge_data) if isinstance(edge_data, dict) else edge_data
             
             # get the street name
-            street_name = edge_info.get('name', 'Unnamed road')
-            
-            # handle cases where name might be a list
+            street_name = edge_info.get("name")
+            if not street_name:
+                street_name = edge_info.get("ref", "Unnamed road")
+
+            # If it's a list, join
             if isinstance(street_name, list):
-                street_name = ', '.join(street_name)
+                street_name = ", ".join(street_name)
             
             edge_names.append(street_name)
             print(f"  {u} -> {v}: {street_name}")
+
+            lat1, lon1 = G.nodes[u]['y'], G.nodes[u]['x']
+            lat2, lon2 = G.nodes[v]['y'], G.nodes[v]['x']
+            bearing = compute_bearing(lat1, lon1, lat2, lon2)
+
+            # First instruction
+            if prev_bearing is None:
+                directions.append(f"Start on {street_name}")
+            else:
+                if street_name != prev_street:
+                    maneuver = turn_direction(prev_bearing, bearing)
+                    directions.append(f"{maneuver} onto {street_name}")
+
+            prev_bearing = bearing
+            prev_street = street_name
+
+        
     
     # store edge names in routes dictionary
     routes[shelter]["edge_names"] = edge_names
     routes[shelter]["unique_streets"] = list(set(edge_names))
+    routes[shelter]["directions"] = directions
+    directions.append(f"Arrive at {name}")
     
-    print(f"Total edges: {len(edge_names)}")
-    print(f"Unique streets: {routes[shelter]['unique_streets']}")
+    # print(f"Total edges: {len(edge_names)}")
+    # print(f"Unique streets: {routes[shelter]['unique_streets']}")
     # ox.plot_graph_routes(G, paths, route_linewidths=3, route_colors=ox.plot.get_colors(n=len(paths)), node_size=0)
 
 print("\nRoute Summaries:")
@@ -215,6 +220,8 @@ for shelter, route_info in routes.items():
     print(f"\n{shelter}:")
     print(f"  Distance: {miles:.2f} miles ({route_info['length']:.2f} meters)")
     print(f"  Streets: {' -> '.join(route_info['unique_streets'])}")
+    for step in route_info["directions"]:
+        print("   -", step)
 
     # print(paths)
 
@@ -253,10 +260,9 @@ for name, route_info in routes.items():
     
     # Add turn-by-turn directions
     prev_street = None
-    for street in route_info['edge_names']:
-        if street != prev_street:  # Only show when street changes
-            sidebar_html += f"<li>{street}</li>"
-            prev_street = street
+    for step in route_info['directions']:
+        sidebar_html += f"<li>{step}</li>"
+
     
     sidebar_html += """
         </ol>
