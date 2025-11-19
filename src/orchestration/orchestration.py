@@ -151,3 +151,5 @@ def main(query):
 	if output[0]:
 		agent = DataAgent(base_path="src/data_agent/data")
 		agent.handle_query(lat=41.2940, lon=-72.3768, state="CT")
+	else:
+		print("Data agent not necessary")
