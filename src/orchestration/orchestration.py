@@ -26,7 +26,7 @@ def interpret_query(query):
 				"Value":"NULL"
 			},
 			"need_routing_data":{
-				"Description":"The query specifies a location and asks for directions or routing to it.",
+				"Description":"To answer this question, we need to find directions to a location or set of locations.",
 				"Value":"NULL"
 			}
 		}
@@ -82,7 +82,7 @@ def test_queries():
 			"trials":10
 		},
 		#Asking for routing data
-		{"query":"How do I get to the Storrs disaster shelter?",
+		{"query":"How do I get to the disaster shelter in Storrs?",
 			"desired":[[True, True]],
 			"acceptable":[],
 			"trials":10
@@ -142,14 +142,27 @@ def test_queries():
 		print("True accuracy:",str(desired/trials*100)+"%\n")
         
 def main(query):
+	#test_queries()
+	#return
+	
 	print("Query:",query)
+	context={
+		"query":query,
+		"shelter_results":None,
+		"routing_results":None
+	}
+	
 	output, response, error = interpret_query(query)
 	if error!="":
 		print("Error in interpret_query:",error)
 		print("Response:",response)
 		return
-	if output[0]:
+	if output[0] or output[1]:
 		agent = DataAgent(base_path="src/data_agent/data")
-		agent.handle_query(lat=41.2940, lon=-72.3768, state="CT")
-	else:
-		print("Data agent not necessary")
+		context["shelter_results"]=agent.handle_query(lat=41.2940, lon=-72.3768, state="CT")
+		if output[1]:
+			pass
+			#routing stuff
+	print(json.dumps(context, indent=2))
+	return context
+	
