@@ -4,6 +4,7 @@ import json
 from ollama import chat
 from ollama import ChatResponse
 from ..data_agent.data_agent import DataAgent
+from ..routing_agent import RoutingAgent
 
 
 #gets response from LLM
@@ -157,12 +158,25 @@ def main(query):
 		print("Error in interpret_query:",error)
 		print("Response:",response)
 		return
-	if output[0] or output[1]:
+		
+	shelter_data = None
+	if output[0]:
 		agent = DataAgent(base_path="src/data_agent/data")
-		context["shelter_results"]=agent.handle_query(lat=41.2940, lon=-72.3768, state="CT")
-		if output[1]:
-			pass
-			#routing stuff
-	print(json.dumps(context, indent=2))
-	return context
-	
+		shelter_data = agent.handle_query(lat=41.2940, lon=-72.3768, state="CT")
+	else:
+		print("Data agent not necessary")
+
+	if output[1] and shelter_data:
+		print("Starting routing agent...")
+		shelters_for_routing = {}
+		for shelter in shelter_data["nearest_shelters"]:
+			shelters_for_routing[shelter["name"]] = [shelter["lat"], shelter["lon"]]
+
+		routing_result = RoutingAgent.get_routes(
+			user_lat=41.2940, 
+			user_lon=-72.3768, 
+			shelters=shelters_for_routing
+		)
+		print(json.dumps(routing_result, indent=2))
+	else:
+		print(f"Routing not triggered. need_routing: {output[1]}, has_shelter_data: {shelter_data is not None}")
