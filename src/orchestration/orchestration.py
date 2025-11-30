@@ -158,10 +158,18 @@ def main(query):
 		print("Error in interpret_query:",error)
 		print("Response:",response)
 		return
+	if output[0] or output[1]:
 		
 	shelter_data = None
 	if output[0]:
 		agent = DataAgent(base_path="src/data_agent/data")
+		context["shelter_results"]=agent.handle_query(lat=41.2940, lon=-72.3768, state="CT")
+		if output[1]:
+			pass
+			#routing stuff
+	print(json.dumps(context, indent=2))
+	return context
+	
 		shelter_data = agent.handle_query(lat=41.2940, lon=-72.3768, state="CT")
 	else:
 		print("Data agent not necessary")

@@ -24,3 +24,6 @@ connecticut_drive.graphml
 connecticut_drive.pkl
 routes_map.html
 cache/
+
+# Ignore frontend file
+frontend/__pycache__/backend_bridge.cpython-313.pyc
