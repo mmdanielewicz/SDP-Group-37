@@ -2,9 +2,9 @@ import sys
 from src.orchestration import orchestration
 from src.response_agent.response_agent import generate_response
 
-if __name__ == "__main__":
-    # default query
-    query = "Where are the nearest disaster shelters?"
+if __name__=="__main__":
+    #default query
+    query="What are the routes to the closest disaster shelters?"
     
     # allow user to pass query from terminal
     if len(sys.argv) == 2:
