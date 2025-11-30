@@ -168,6 +168,46 @@ def main(query):
 			user_lon=-72.3768, 
 			shelters=shelters_for_routing
 		)
-		print(json.dumps(routing_result, indent=2))
+
+		combined_result = {
+			"query": query,
+			"user_location": shelter_data["input_location"],
+			"shelters": []
+		}
+
+
+		routing_lookup = {route["shelter_name"]: route for route in routing_result["routes"]}
+		
+		# Merge each shelter's data with its routing info
+		for shelter in shelter_data["nearest_shelters"]:
+			shelter_name = shelter["name"]
+			combined_shelter = {
+				# data agent
+				"name": shelter["name"],
+				"address": shelter["address"],
+				"city": shelter["city"],
+				"state": shelter["state"],
+				"zip": shelter["zip"],
+				"status": shelter["status"],
+				"handicap_accessible": shelter["handicap_accessible"],
+				"location": {
+					"lat": shelter["lat"],
+					"lon": shelter["lon"]
+				},
+				"straightline_distance_miles": shelter["straightline_distance_miles"],
+				# routing agent
+				"route": routing_lookup.get(shelter_name, None)
+			}
+			combined_result["shelters"].append(combined_shelter)
+
+		print("\n" + "="*50)
+		print("COMBINED RESULT")
+		print("="*50)
+		print(json.dumps(combined_result, indent=2))
+		return combined_result
+		
+	elif output[0]:
+		print(json.dumps(shelter_data, indent=2))
+		return shelter_data
 	else:
 		print(f"Routing not triggered. need_routing: {output[1]}, has_shelter_data: {shelter_data is not None}")
