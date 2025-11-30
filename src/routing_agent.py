@@ -278,7 +278,6 @@ class RoutingAgent:
                 "route_summary": {
                     "major_roads": route_info["unique_streets"][:5], 
                     "total_turns": len(route_info["directions"]) - 2,  
-                    "complexity": "simple" if len(route_info["directions"]) <= 5 else "moderate" if len(route_info["directions"]) <= 10 else "complex"
                 },
                 "directions": {
                     "steps": route_info["directions"],
