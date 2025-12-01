@@ -30,115 +30,28 @@ if st.button("Run query"):
         with st.spinner("Calling backend orchestration..."):
             result = handle_user_query(user_query)
 
-        # --- Basic context ---
         st.write("### Query context")
         st.write("**Your query:**", user_query)
         st.write("**Start location (UI only for now):**", start_location)
         st.write("**Mode:**", mode)
 
-        # --- Handle errors ---
-        if isinstance(result, dict) and "error" in result:
-            st.error(f"Backend error: {result['error']}")
-            with st.expander("Raw backend response"):
+        # Handle the response
+        if isinstance(result, dict):
+            if "error" in result:
+                st.error(f"Backend error: {result['error']}")
                 st.json(result)
-        elif isinstance(result, dict):
-            # --- Case 1: New combined result WITH ROUTES ---
-            if "shelters" in result:
-                st.subheader("Shelters with routing (from orchestration + routing agent)")
-
-                shelters = result["shelters"]
-                if not shelters:
-                    st.info("No shelters returned by the backend.")
-                else:
-                    # Lightweight table of top shelters
-                    rows = []
-                    for s in shelters[:5]:
-                        route = s.get("route")
-                        distance_display = None
-                        if route and "distance" in route:
-                            distance_display = route["distance"].get("display")
-
-                        rows.append({
-                            "Name": s.get("name"),
-                            "City": s.get("city"),
-                            "State": s.get("state"),
-                            "Status": s.get("status"),
-                            "Accessible": s.get("handicap_accessible"),
-                            "Straight-line (mi)": round(s.get("straightline_distance_miles", 0), 2),
-                            "Route distance": distance_display,
-                        })
-
-                    st.table(rows)
-
-                    # Show directions for the nearest shelter that has a route
-                    nearest_with_route = next(
-                        (s for s in shelters if s.get("route") is not None),
-                        None
-                    )
-
-                    if nearest_with_route:
-                        route = nearest_with_route["route"]
-                        st.markdown(
-                            f"#### Turn-by-turn directions "
-                            f"to **{nearest_with_route['name']}**"
-                        )
-
-                        steps = route.get("directions", {}).get("steps", [])
-                        if steps:
-                            for step in steps:
-                                st.write("•", step)
-                        else:
-                            st.info("No detailed steps returned in route.")
-
-                    else:
-                        st.info("No routing information found in the response.")
-
-            # --- Case 2: Old shelter-only data agent result ---
-            elif "shelter_results" in result and "nearest_shelters" in result["shelter_results"]:
-                st.subheader("Nearest shelters (Data Agent only)")
-                sr = result["shelter_results"]
-                shelters = sr.get("nearest_shelters", [])
-
-                if not shelters:
-                    st.info("No shelters returned by Data Agent.")
-                else:
-                    rows = []
-                    for s in shelters[:10]:
-                        rows.append({
-                            "Name": s.get("name"),
-                            "City": s.get("city"),
-                            "State": s.get("state"),
-                            "Status": s.get("status"),
-                            "Accessible": s.get("handicap_accessible"),
-                            "Distance (mi)": round(s.get("straightline_distance_miles", 0), 2),
-                        })
-                    st.table(rows)
-
-            # --- Case 3: Raw data agent (no orchestration) ---
-            elif "nearest_shelters" in result:
-                st.subheader("Nearest shelters (raw Data Agent output)")
-                shelters = result.get("nearest_shelters", [])
-                rows = []
-                for s in shelters[:10]:
-                    rows.append({
-                        "Name": s.get("name"),
-                        "City": s.get("city"),
-                        "State": s.get("state"),
-                        "Status": s.get("status"),
-                        "Accessible": s.get("handicap_accessible"),
-                        "Distance (mi)": round(s.get("straightline_distance_miles", 0), 2),
-                    })
-                st.table(rows)
-
-            # --- Fallback: unknown structure ---
+            elif "response" in result:
+                # NEW: Show natural language response from response agent
+                st.subheader("Response")
+                st.markdown(result["response"])
+                
+                # Show raw data in expandable section
+                with st.expander("View technical details"):
+                    st.json(result["raw_data"])
             else:
-                st.info("Backend returned data in an unexpected format. See raw JSON below.")
-
-            # Always let people inspect the raw response
-            with st.expander("Raw backend response (JSON)"):
+                # Fallback for old format without response agent
+                st.subheader("Backend response")
                 st.json(result)
-
         else:
-            # Non-dict edge case
             st.subheader("Backend response (non-dict)")
             st.write(result)

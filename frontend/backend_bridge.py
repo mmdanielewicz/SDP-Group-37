@@ -1,25 +1,49 @@
-# frontend/backend_bridge.py
 import os
 import sys
-from typing import Any, Dict
+from typing import Dict, Any
 
-# --- Make project root importable ---
-# backend_bridge.py is in: <project_root>/frontend/backend_bridge.py
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 
-#  import orchestration as a real package module
 from src.orchestration.orchestration import main as orchestration_main
+from src.response_agent.response_agent import generate_response
 
 
-def handle_user_query(query: str, lat=41.2940, lon=-72.3768, state="CT"):
+def handle_user_query(query: str, lat=None, lon=None, state="CT"):
     """
-    Wrapper that calls the existing backend orchestration.
+    Wrapper that calls orchestration and generates natural language response.
+    
+    NOTE: lat/lon parameters are currently ignored because orchestration.main()
+    has hardcoded coordinates. Once orchestration is updated to accept location
+    parameters, this function will pass them through.
+    
+    Args:
+        query: User's question
+        lat: Latitude (currently not used - waiting for orchestration update)
+        lon: Longitude (currently not used - waiting for orchestration update)
+        state: State abbreviation (defaults to CT)
+    
+    Returns:
+        Dict with query, natural language response, and raw data
     """
     try:
-        result = orchestration_main(query)
+        # TODO: Pass lat/lon once orchestration.main() accepts them
+        # For now, orchestration uses hardcoded coordinates (41.2940, -72.3768)
+        context = orchestration_main(query)
+        
+        if not context:
+            return {"error": "No context returned from orchestration", "query": query}
+        
+        # Generate natural language response
+        response_text = generate_response(query, context)
+        
+        # Return both for flexibility
+        return {
+            "query": query,
+            "response": response_text,  # Human-readable
+            "raw_data": context  # Still available if needed
+        }
+        
     except Exception as e:
         return {"error": str(e), "query": query}
-
-    return result
