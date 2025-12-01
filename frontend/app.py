@@ -7,7 +7,6 @@ st.set_page_config(page_title="Senior Design MVP", layout="wide")
 st.title("Disaster Routing Assistant (MVP)")
 
 st.write(
-    "This MVP UI is connected to the orchestration agent. "
     "Ask a question about shelters, routes, or disasters."
 )
 
