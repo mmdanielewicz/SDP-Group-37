@@ -14,6 +14,10 @@ if __name__=="__main__":
     # NOTE: orchestration.main() already prints context, so this keeps existing behavior
     context = orchestration.main(query)
 
+    if not context:
+        print("No context returned from orchestration.")
+        sys.exit(1)
+
     # 2. run the response agent to summarize the context
     output = generate_response(query, context)
 
