@@ -27,7 +27,7 @@ def interpret_query(query):
 				"Value":"NULL"
 			},
 			"need_routing_data":{
-				"Description":"To answer this question, we need to find directions to a location or set of locations.",
+				"Description":"The query specifies a location and asks for directions or routing to it.",
 				"Value":"NULL"
 			}
 		}
@@ -83,7 +83,7 @@ def test_queries():
 			"trials":10
 		},
 		#Asking for routing data
-		{"query":"How do I get to the disaster shelter in Storrs?",
+		{"query":"How do I get to the Storrs disaster shelter?",
 			"desired":[[True, True]],
 			"acceptable":[],
 			"trials":10
@@ -143,33 +143,16 @@ def test_queries():
 		print("True accuracy:",str(desired/trials*100)+"%\n")
         
 def main(query):
-	#test_queries()
-	#return
-	
 	print("Query:",query)
-	context={
-		"query":query,
-		"shelter_results":None,
-		"routing_results":None
-	}
-	
 	output, response, error = interpret_query(query)
 	if error!="":
 		print("Error in interpret_query:",error)
 		print("Response:",response)
 		return
-	if output[0] or output[1]:
 		
 	shelter_data = None
 	if output[0]:
 		agent = DataAgent(base_path="src/data_agent/data")
-		context["shelter_results"]=agent.handle_query(lat=41.2940, lon=-72.3768, state="CT")
-		if output[1]:
-			pass
-			#routing stuff
-	print(json.dumps(context, indent=2))
-	return context
-	
 		shelter_data = agent.handle_query(lat=41.2940, lon=-72.3768, state="CT")
 	else:
 		print("Data agent not necessary")
@@ -185,6 +168,46 @@ def main(query):
 			user_lon=-72.3768, 
 			shelters=shelters_for_routing
 		)
-		print(json.dumps(routing_result, indent=2))
+
+		combined_result = {
+			"query": query,
+			"user_location": shelter_data["input_location"],
+			"shelters": []
+		}
+
+
+		routing_lookup = {route["shelter_name"]: route for route in routing_result["routes"]}
+		
+		# Merge each shelter's data with its routing info
+		for shelter in shelter_data["nearest_shelters"]:
+			shelter_name = shelter["name"]
+			combined_shelter = {
+				# data agent
+				"name": shelter["name"],
+				"address": shelter["address"],
+				"city": shelter["city"],
+				"state": shelter["state"],
+				"zip": shelter["zip"],
+				"status": shelter["status"],
+				"handicap_accessible": shelter["handicap_accessible"],
+				"location": {
+					"lat": shelter["lat"],
+					"lon": shelter["lon"]
+				},
+				"straightline_distance_miles": shelter["straightline_distance_miles"],
+				# routing agent
+				"route": routing_lookup.get(shelter_name, None)
+			}
+			combined_result["shelters"].append(combined_shelter)
+
+		print("\n" + "="*50)
+		print("COMBINED RESULT")
+		print("="*50)
+		print(json.dumps(combined_result, indent=2))
+		return combined_result
+		
+	elif output[0]:
+		print(json.dumps(shelter_data, indent=2))
+		return shelter_data
 	else:
 		print(f"Routing not triggered. need_routing: {output[1]}, has_shelter_data: {shelter_data is not None}")
