@@ -215,15 +215,13 @@ class DataAgent:
 
         return results
 
-
-
     # -------------------------------------------------------------
     def handle_query(self, lat, lon, state=None):
         """Handle a query by coordinates."""
-        data = self.get_nearest_shelters(lat, lon, limit=20, state_filter=state)
-        #print(json.dumps(data, indent=2))
-        return data
 
+        data = self.get_nearest_shelters(lat, lon, limit=5, state_filter=state)
+        # print(json.dumps(data, indent=2))
+        return data
 
 # -------------------------------------------------------------
 if __name__ == "__main__":
