@@ -27,3 +27,7 @@ cache/
 
 # Ignore frontend file
 frontend/__pycache__/backend_bridge.cpython-313.pyc
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
