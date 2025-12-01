@@ -175,7 +175,7 @@ class RoutingAgent:
 
         # User location setup
         try:
-            user_node = str(ox.distance.nearest_nodes(G, X=user_lon, Y=user_lat))
+            user_node = (ox.distance.nearest_nodes(G, X=user_lon, Y=user_lat))
         except Exception as e:
             return {
                 "success": False,
@@ -190,7 +190,7 @@ class RoutingAgent:
         for name, coords in shelters.items():
             lat, lon = coords[0], coords[1]
             try:
-                shelter_node = str(ox.distance.nearest_nodes(G, X=lon, Y=lat))
+                shelter_node = (ox.distance.nearest_nodes(G, X=lon, Y=lat))
                 path = nx.shortest_path(G, user_node, shelter_node, weight="length")
                 length = nx.shortest_path_length(G, user_node, shelter_node, weight="length")
                 routes[name] = {
