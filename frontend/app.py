@@ -1,6 +1,6 @@
 # frontend/app.py
 import streamlit as st
-from backend_bridge import handle_user_query
+from backend_bridge import handle_user_query, guess_location, get_coords
 
 st.set_page_config(page_title="Senior Design MVP", layout="wide")
 
@@ -19,20 +19,25 @@ user_query = st.text_area(
 
 col1, col2 = st.columns(2)
 with col1:
-    start_location = st.text_input("Start location", "Storrs, CT")
+    #autofills with location based on IP address
+    start_location = st.text_input("Start location", guess_location())
 with col2:
     mode = st.selectbox("Mode", ["Shelters nearby", "Safe route", "General question"])
 
 if st.button("Run query"):
+    coords=get_coords(start_location)
     if not user_query.strip():
         st.warning("Please type a question first.")
+    elif not coords:
+        st.warning("Location name not recognized.")
     else:
         with st.spinner("Calling backend orchestration..."):
-            result = handle_user_query(user_query)
+            print(coords)
+            result = handle_user_query(user_query,coords[0],coords[1])
 
         st.write("### Query context")
         st.write("**Your query:**", user_query)
-        st.write("**Start location (UI only for now):**", start_location)
+        st.write("**Start location:**", start_location)
         st.write("**Mode:**", mode)
 
         # Handle the response

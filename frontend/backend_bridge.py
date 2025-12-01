@@ -1,6 +1,8 @@
 import os
 import sys
 from typing import Dict, Any
+import geocoder
+from geopy.geocoders import Nominatim
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT_DIR not in sys.path:
@@ -9,6 +11,26 @@ if ROOT_DIR not in sys.path:
 from src.orchestration.orchestration import main as orchestration_main
 from src.response_agent.response_agent import generate_response
 
+def guess_location():
+	"""Guesses user coords using their IP address and matches it to a location name"""
+	g = geocoder.ip('me')
+	if not g.latlng:
+		return "No location found"
+	nom_agent = Nominatim(user_agent="SDP_37")
+	loc = nom_agent.reverse(g.latlng, timeout=5)
+	if not loc:
+		return "No location address found"
+	#print(loc.raw)
+	address=loc.raw["address"]
+	return f"{address["road"]}, {address["town"]}, {address["state"]}"
+
+def get_coords(name="Storrs, CT"):
+	"""Returns coordinates based on place name"""
+	nom_agent = Nominatim(user_agent="SDP_37")
+	loc = nom_agent.geocode(name, timeout=5)
+	if not loc:
+		return
+	return(loc.latitude,loc.longitude)
 
 def handle_user_query(query: str, lat=None, lon=None, state="CT"):
     """
@@ -30,7 +52,7 @@ def handle_user_query(query: str, lat=None, lon=None, state="CT"):
     try:
         # TODO: Pass lat/lon once orchestration.main() accepts them
         # For now, orchestration uses hardcoded coordinates (41.2940, -72.3768)
-        context = orchestration_main(query)
+        context = orchestration_main(query, lat, lon)
         
         if not context:
             return {"error": "No context returned from orchestration", "query": query}
