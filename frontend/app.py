@@ -1,5 +1,7 @@
 # frontend/app.py
 import streamlit as st
+from streamlit_folium import folium_static
+import folium
 from backend_bridge import handle_user_query, guess_location, get_coords
 
 st.set_page_config(page_title="Senior Design MVP", layout="wide")

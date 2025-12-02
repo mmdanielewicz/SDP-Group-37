@@ -18,9 +18,6 @@ python -m venv .venv
 ### 2. Install required packages
 ```
 pip install -r requirements.txt
-pip install streamlit
-pip install ollama
-pip install geopandas fiona shapely pyproj
 ```
 
 ### 3. Install and start Ollama
@@ -35,4 +32,3 @@ From repo root:
 python -m streamlit run frontend/app.py
 ```
 The UI opens at: http://localhost:8501
-
