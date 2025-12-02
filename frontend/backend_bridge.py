@@ -3,6 +3,7 @@ import sys
 from typing import Dict, Any
 import geocoder
 from geopy.geocoders import Nominatim
+import copy
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT_DIR not in sys.path:
@@ -58,7 +59,14 @@ def handle_user_query(query: str, lat=None, lon=None, state="CT"):
             return {"error": "No context returned from orchestration", "query": query}
         
         # Generate natural language response
-        response_text = generate_response(query, context)
+        llm_context = copy.deepcopy(context)
+
+        # Remove path_coordinates ONLY from llm_context
+        if "shelters" in llm_context:
+            for shelter in llm_context["shelters"]:
+                if shelter.get("route") and "path_coordinates" in shelter["route"]:
+                    del shelter["route"]["path_coordinates"]
+        response_text = generate_response(query, llm_context)
         
         # Return both for flexibility
         return {
