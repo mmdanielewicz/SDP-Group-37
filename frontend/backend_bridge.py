@@ -22,7 +22,7 @@ def guess_location():
 		return "No location address found"
 	#print(loc.raw)
 	address=loc.raw["address"]
-	return f"{address["road"]}, {address["town"]}, {address["state"]}"
+	return f"{address['road']}, {address['town']}, {address['state']}"
 
 def get_coords(name="Storrs, CT"):
 	"""Returns coordinates based on place name"""
