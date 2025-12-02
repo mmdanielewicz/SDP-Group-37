@@ -282,7 +282,11 @@ class RoutingAgent:
                 "directions": {
                     "steps": route_info["directions"],
                     "narrative": RoutingAgent.format_directions_narrative(route_info["directions"])
-                }
+                },
+                "path_coordinates": [
+                    [G.nodes[node]['y'], G.nodes[node]['x']] 
+                    for node in route_info["path"]
+                ]
             })
 
         # Sort by distance
