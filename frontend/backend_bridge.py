@@ -13,25 +13,31 @@ from src.orchestration.orchestration import main as orchestration_main
 from src.response_agent.response_agent import generate_response
 
 def guess_location():
-	"""Guesses user coords using their IP address and matches it to a location name"""
-	g = geocoder.ip('me')
-	if not g.latlng:
-		return "No location found"
-	nom_agent = Nominatim(user_agent="SDP_37")
-	loc = nom_agent.reverse(g.latlng, timeout=5)
-	if not loc:
-		return "No location address found"
-	#print(loc.raw)
-	address=loc.raw["address"]
-	return f"{address['road']}, {address['town']}, {address['state']}"
+    """Guesses user coords using their IP address and matches it to a location name"""
+    g = geocoder.ip('me')
+    if not g.latlng:
+        return "No location found"
+    nom_agent = Nominatim(user_agent="SDP_37")
+    loc = nom_agent.reverse(g.latlng, timeout=5)
+    #loc = nom_agent.reverse((41.715839,-72.221840), timeout=5)
+    if not loc:
+        return "No location address found"
+    #print(loc.raw)
+    address=loc.raw["address"]
+    area_type="town"
+    if "city" in address:
+        area_type="city"
+    elif "residential" in address:
+        area_type="residential"
+    return f"{address["road"]}, {address[area_type]}, {address["state"]}"
 
 def get_coords(name="Storrs, CT"):
-	"""Returns coordinates based on place name"""
-	nom_agent = Nominatim(user_agent="SDP_37")
-	loc = nom_agent.geocode(name, timeout=5)
-	if not loc:
-		return
-	return(loc.latitude,loc.longitude)
+    """Returns coordinates based on place name"""
+    nom_agent = Nominatim(user_agent="SDP_37")
+    loc = nom_agent.geocode(name, timeout=5)
+    if not loc:
+        return
+    return(loc.latitude,loc.longitude)
 
 def handle_user_query(query: str, lat=None, lon=None, state="CT"):
     """
